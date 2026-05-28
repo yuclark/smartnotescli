@@ -1,0 +1,10 @@
+{
+  "export_dir": "exports",
+  "default_priority": "Medium",
+  "keywords": {
+    "Work": ["meeting", "deadline", "project", "task", "client", "manager", "todo", "capstone"],
+    "Coding": ["code", "bug", "python", "react", "django", "git", "github", "api", "database", "supabase", "vercel"],
+    "Personal": ["gym", "grocery", "buy", "health", "workout", "reminder", "perfume", "car", "match"],
+    "Ideas": ["innovate", "brainstorm", "app", "business", "concept", "draft", "side-hustle"]
+  }
+}
