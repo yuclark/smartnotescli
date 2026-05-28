@@ -54,3 +54,15 @@ def get_note_by_id(note_id: int):
         cursor = conn.cursor()
         cursor.execute("SELECT id, content, category, created_at FROM notes WHERE id = ?", (note_id,))
         return cursor.fetchone()
+    
+def get_category_stats():
+    """Returns a list of tuples containing categories and their respective note counts."""
+    with get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT category, COUNT(*) as count 
+            FROM notes 
+            GROUP BY category 
+            ORDER BY count DESC
+        """)
+        return cursor.fetchall()

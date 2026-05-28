@@ -3,6 +3,9 @@ from rich.console import Console
 from rich.table import Table
 from rich.panel import Panel
 from rich.prompt import Prompt
+# NEW IMPORTS FOR THE DASHBOARD
+from rich.align import Align
+from rich.columns import Columns
 
 import database
 import tagger
@@ -27,7 +30,7 @@ def handle_add():
     category = tagger.auto_categorize(content)
     database.add_note(content, category)
     
-    console.print(f"\n[bold check]✓ Note saved successfully![/bold check]")
+    console.print(f"\n[bold green]✓ Note saved successfully![/bold green]")
     console.print(f"Auto-categorized as: [bold yellow]{category}[/bold yellow]\n")
 
 def display_notes_table(notes):
@@ -70,6 +73,32 @@ def handle_export():
     filepath = exporter.export_to_markdown(note[0], note[1], note[2], note[3])
     console.print(f"[bold green]✓ Successfully exported to {filepath}[/bold green]\n")
 
+# NEW FEATURE: ANALYTICS DASHBOARD
+def handle_analytics():
+    stats = database.get_category_stats()
+    all_notes = database.get_all_notes()
+    total_notes = len(all_notes)
+    
+    if total_notes == 0:
+        console.print("[yellow]\nAdd some notes first to see analytics![/yellow]\n")
+        return
+        
+    console.print("\n[bold cyan]📊 Knowledge Base Analytics[/bold cyan]")
+    
+    # Summary Box
+    summary_text = f"[bold white]Total Notes Saved:[/bold white] [bold green]{total_notes}[/bold green]"
+    console.print(Panel(Align.center(summary_text), border_style="cyan"))
+    
+    # Text-based Distribution Chart
+    console.print("[bold]Category Distribution:[/bold]")
+    for category, count in stats:
+        percentage = (count / total_notes) * 100
+        # Create a visual block bar representation
+        bar_length = int(percentage / 5)  # 1 block per 5%
+        bar = "■" * max(bar_length, 1)
+        console.print(f"  [yellow]{category:<12}[/yellow] | [magenta]{bar:<20}[/magenta] {count} note(s) ({percentage:.1f}%)")
+    console.print()
+
 def main():
     database.init_db()
     display_welcome()
@@ -80,9 +109,10 @@ def main():
         console.print("2. [bold blue]View All Notes[/bold blue]")
         console.print("3. [bold yellow]Search Notes[/bold yellow]")
         console.print("4. [bold magenta]Export Note to MD[/bold magenta]")
-        console.print("5. [bold red]Exit[/bold red]")
+        console.print("5. [bold cyan]View Analytics Dashboard[/bold cyan]") # New Menu item
+        console.print("6. [bold red]Exit[/bold red]")
         
-        choice = Prompt.ask("Choose an action", choices=["1", "2", "3", "4", "5"], default="1")
+        choice = Prompt.ask("Choose an action", choices=["1", "2", "3", "4", "5", "6"], default="1")
         
         if choice == "1":
             handle_add()
@@ -93,6 +123,8 @@ def main():
         elif choice == "4":
             handle_export()
         elif choice == "5":
+            handle_analytics()
+        elif choice == "6":
             console.print("[bold cyan]Goodbye![/bold cyan]")
             sys.exit(0)
 
